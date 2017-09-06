@@ -1,0 +1,73 @@
+#!/bin/bash
+export SSG_LICENSE="$(cat /Users/solda01/Documents/API\ Mgmt/solda01-Licenses/ssg_licenses/current/CA_7556907218053156395_SSG_Gateway_9.xml | gzip | base64)"
+docker network create --driver bridge microservice
+
+#Start the API Gateway infrastruture with remote back end mysql
+echo "Start the API Gateway backed by MySQL infrastruture"
+docker-compose -p ssg -f ssg-init.yml up -d
+
+ssg=$(docker logs $(docker ps -q --filter "ancestor=caapim/gateway") 2>&1 | grep "apim-provisioning: INFO: waiting for the shutdown file")
+
+echo "Looking to source control to deploy apim policy; waiting for APIM Gateway to start"
+while [ "$ssg" != "apim-provisioning: INFO: waiting for the shutdown file at \"/userdata/shutdown\" to be created" ]; do
+    echo "waiting for APIM Gateway to start"    
+    ssg=$(docker logs $(docker ps -q --filter "ancestor=caapim/gateway") 2>&1 | grep "apim-provisioning: INFO: waiting for the shutdown file")
+    sleep 10
+done
+
+../GMU/./GatewayMigrationUtility.sh migrateIn -h localhost -p 8443 -u pmadmin --plaintextPassword 7layer --trustCertificate --trustHostname --bundle ../GMU/BUNDLES/bundle_ms.xml --results ../GMU/OUT/results.xml
+
+mvn clean install -f ../pom.xml
+docker-compose -p ms -f ms-maven-init.yml up -d
+docker-compose -p ms -f ms-maven-init.yml scale hello=4
+
+#Start the backing MySQL databases
+docker-compose -p lacinit -f docker-compose.LACDBINIT.yml up -d
+docker-compose -p mysql_orders_recommendations -f docker-compose.APIDATA.yml up -d
+
+#Start the base LAC admin Infrastructure
+echo "Start the LAC Admin Node infrastruture"
+docker-compose -p lacinit -f docker-compose.LACINIT.yml up -d
+
+#Wait for lac_admin_node to start to provision with and API
+lacStartMsg=$(docker logs $(docker ps -q --filter="name=lacadmin_node") 2>&1 | grep "CA Live API Creator: REST service is starting")
+echo "Looking for LAC Admin Node to start to deploy API Endpoint from source code control"
+while [ "$lacStartMsg" != "CA Live API Creator: REST service is starting" ]; do
+    echo "waiting for LAC Admin Node to start"
+	lacStartMsg=$(docker logs $(docker ps -q --filter="name=lacadmin_node") 2>&1 | grep "CA Live API Creator: REST service is starting")
+    sleep 5
+done
+
+#Now start the scale node and have it attach to the cluster
+echo "Start the LAC Scale Node"
+docker-compose -p lacnode -f docker-compose.LACNODE.yml up -d
+
+#Wait for lac_scale_node to start before scaling
+lacStartMsg=$(docker logs $(docker ps -q --filter="name=lacscale_node") 2>&1 | grep "CA Live API Creator: REST service is starting")
+echo "Waiting for single LAC Scale Node to start before scaling"
+while [ "$lacStartMsg" != "CA Live API Creator: REST service is starting" ]; do
+    echo "waiting for LAC Scale Node to start"
+        lacStartMsg=$(docker logs $(docker ps -q --filter="name=lacscale_node") 2>&1 | grep "CA Live API Creator: REST service is starting")
+    sleep 5
+done
+
+#Extra little pause to be sure
+sleep 5
+
+#Once Single scale node is up, add another for a total of 3 LAC nodes (1 Admin + 2 Scale)
+echo "Scaling LAC Cluster to three nodes (1 Admin + 2 Scale) to start demo"
+docker-compose -p lacnode -f docker-compose.LACNODE.yml scale lacscale_node=2
+
+#Deploy the Consul and Registrater Containers
+echo "Deploying and configuring Consul Registry Infrastructure"
+docker-compose -p msregistry -f docker-compose.MSREGISTRY.yml up -d
+
+echo "Deploying and configuring API Endpoint to LAC Admin node"
+lacadmin login -u admin -p Password1 http://localhost:8111/ -a lac_cluster
+lacadmin project import --file recommendation.json
+lacadmin datasource update --prefix rec --password root
+lacadmin project import --file customer_orders.json
+lacadmin datasource update --prefix orders --password root
+
+: '
+'

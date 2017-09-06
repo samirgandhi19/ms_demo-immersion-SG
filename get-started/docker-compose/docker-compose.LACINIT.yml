@@ -1,0 +1,32 @@
+# This docker-compose file will deploy all the base infrastructure for the LAC Cluster
+# This LAC node will have it's port exposed so that the CLI process (simulating CI/CD)
+# in the script will be able to deploy the API and modify it for consumption
+
+version: '3'
+
+# Declare the network to be an external network
+networks:
+  public:
+    external: true
+
+# List all service containers to start and their configuration
+services:
+
+# Start one node of LAC with port exposed to host for admin/ui access
+# this node cannot be scaled because of exposed port
+  lacadmin_node:
+    image: 'caliveapicreator/3.2'
+    networks:
+      - public
+    ports:
+      - '8111:8080'
+    environment:
+      - SERVICE_NAME=lac_admin
+      - SERVICE_TAGS=proxy:false
+      - RDS_HOSTNAME=lac_mysql
+      - RDS_PORT=3306
+      - RDS_DB_NAME=lac_admin
+      - RDS_USERNAME=lac_admin
+      - RDS_PASSWORD=CAdemo123
+      - ca_accept_license=enu
+

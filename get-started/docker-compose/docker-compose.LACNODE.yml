@@ -1,0 +1,25 @@
+# This docker-compose file will deploy a scale node (no port exposed) for the LAC Cluster
+
+version: '3'
+
+# Declare the network to be an external network
+networks:
+  public:
+    external: true
+
+# List all service containers to start and their configuration
+services:
+
+# Start one node of LAC without port exposed that can be dynamically scaled
+  lacscale_node:
+    image: 'caliveapicreator/3.2'
+    networks:
+     - public
+    environment:
+      - SERVICE_NAME=orders_recommendations_microservice
+      - SERVICE_TAGS=proxy:true,baseurl:/rest/default/svcOrders/v1/Orders, baseurl:/rest/default/svcRecs/v1/recommendations
+      - RDS_HOSTNAME=lac_mysql
+      - RDS_PORT=3306
+      - RDS_DB_NAME=lac_admin
+      - RDS_USERNAME=lac_admin
+      - RDS_PASSWORD=CAdemo123

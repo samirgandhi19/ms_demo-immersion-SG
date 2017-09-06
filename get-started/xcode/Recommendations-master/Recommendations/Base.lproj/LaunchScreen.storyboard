@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Llm-lL-Icb"/>
+                        <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash" translatesAutoresizingMaskIntoConstraints="NO" id="hD8-bT-a3i">
+                                <rect key="frame" x="-80" y="134" width="375" height="533"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="533" id="TSD-jG-vIV"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="CALogo" translatesAutoresizingMaskIntoConstraints="NO" id="aoo-5x-Vle">
+                                <rect key="frame" x="110" y="28" width="154" height="90"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="aoo-5x-Vle" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="0CS-GZ-akG"/>
+                            <constraint firstItem="hD8-bT-a3i" firstAttribute="bottom" secondItem="xb3-aO-Qok" secondAttribute="top" id="9z2-9F-wVN"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="hD8-bT-a3i" secondAttribute="trailing" constant="64" id="CAU-ic-07Q"/>
+                            <constraint firstItem="aoo-5x-Vle" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="8" symbolic="YES" id="P6I-4J-oyY"/>
+                            <constraint firstItem="hD8-bT-a3i" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="-96" id="bBG-Oz-34L"/>
+                            <constraint firstItem="hD8-bT-a3i" firstAttribute="top" secondItem="aoo-5x-Vle" secondAttribute="bottom" constant="16" id="u9F-YW-y5r"/>
+                            <constraint firstItem="aoo-5x-Vle" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="94" id="vrJ-Fu-ZPW"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="52" y="374.66266866566718"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="CALogo" width="395" height="352"/>
+        <image name="splash" width="2636" height="1591"/>
+    </resources>
+</document>

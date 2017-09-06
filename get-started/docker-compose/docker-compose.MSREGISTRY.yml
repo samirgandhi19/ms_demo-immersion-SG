@@ -1,0 +1,34 @@
+# This docker-compose file will deploy the registry
+
+version: '3'
+
+# Declare the network to be an external network
+networks:
+  public:
+    external: true
+
+# List all service containers to start and their configuration
+services:
+
+# Start the consul container, have it exposed on 8500 to localhost for browser
+  consul:
+    command: "-bootstrap"
+    image: gliderlabs/consul-server:latest
+    networks:
+      - public
+    environment:
+      - SERVICE_IGNORE=true
+      - SERVICE_TAGS=proxy:false
+    ports:
+      - "8500:8500"
+
+# Start the registrator container, have it listen for new IPs and auto register in consul
+  registrator:
+    command: "-internal consul://consul:8500"
+    image: gliderlabs/registrator:latest
+    networks:
+      - public
+    links:
+      - "consul"
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock"

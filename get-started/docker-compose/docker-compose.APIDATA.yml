@@ -1,0 +1,34 @@
+# This docker-compose file will deploy all the base MySQL infrastructure for
+# the API that will have the actual API Data initialized for the API project
+# that will be deployed into LAC after the admin node has started.
+
+version: '3'
+
+services:
+
+# API Orders Data Source
+  mysql_orders:
+    image: 'mysql:5.7.9'
+    networks:
+      - public
+    environment:
+      - SERVICE_IGNORE=true
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./dbinit/mysql_orders:/docker-entrypoint-initdb.d
+
+# API Recommendation Data Source
+  mysql_recommendation:
+    image: 'mysql:5.7.9'
+    networks:
+      - public
+    environment:
+      - SERVICE_IGNORE=true
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./dbinit/mysql_recommendation:/docker-entrypoint-initdb.d
+
+# Declare the network to be an external network
+networks:
+  public:
+    external: true

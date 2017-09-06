@@ -1,0 +1,23 @@
+{
+  "Service": {
+  "name": "Google Search With OAuth",
+  "gatewayUri": "/google-with-oauth",
+  "httpMethods": [ "get" ],
+  "policy": [
+      {
+        "RequireOauth2Token": {
+          "scope_required": "GOOGLE_SEARCH",
+          "scope_fail": "false",
+          "onetime": "false",
+          "given_access_token": ""
+        }
+      },
+      {
+        "RouteHttp" : {
+          "targetUrl" : "http://www.google.com/search${request.url.query}",
+          "httpMethod" : "Automatic"
+        }
+      }
+    ]
+  }
+}
